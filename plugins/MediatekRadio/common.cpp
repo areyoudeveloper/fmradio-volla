@@ -20,7 +20,7 @@
 #undef LOG_TAG
 #endif
 #define LOG_TAG "FMLIB_COM"
-LOGE = printf;
+// LOGE = printf;
 static int g_stopscan = 0;
 
 int COM_open_dev(const char *pname, int *fd)
@@ -31,14 +31,14 @@ int COM_open_dev(const char *pname, int *fd)
     FMR_ASSERT(pname);
     FMR_ASSERT(fd);
 
-    LOGI("COM_open_dev start\n");
+  //  LOGI("COM_open_dev start\n");
     tmp = open(pname, O_RDWR);
     if (tmp < 0) {
-        LOGE("Open %s failed, %s\n", pname, strerror(errno));
+       // LOGE("Open %s failed, %s\n", pname, strerror(errno));
         ret = -ERR_INVALID_FD;
     }
     *fd = tmp;
-    LOGI("%s, [fd=%d] [ret=%d]\n", __func__, *fd, ret);
+    // LOGI("%s, [fd=%d] [ret=%d]\n", __func__, *fd, ret);
     return ret;
 }
 
@@ -46,12 +46,12 @@ int COM_close_dev(int fd)
 {
     int ret = 0;
 
-    LOGI("COM_close_dev start\n");
+  //  LOGI("COM_close_dev start\n");
     ret = close(fd);
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+  //      LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
+   // LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
 
@@ -60,7 +60,7 @@ int COM_pwr_up(int fd, int band, int freq)
     int ret = 0;
     struct fm_tune_parm parm;
 
-    LOGI("%s, [freq=%d]\n", __func__, freq);
+//    LOGI("%s, [freq=%d]\n", __func__, freq);
     bzero(&parm, sizeof(struct fm_tune_parm));
 
     parm.band = band;
@@ -70,21 +70,21 @@ int COM_pwr_up(int fd, int band, int freq)
 
     ret = ioctl(fd, FM_IOCTL_POWERUP, &parm);
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+   //     LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
+  //  LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
 
 int COM_pwr_down(int fd, int type)
 {
     int ret = 0;
-    LOGI("%s, [type=%d]\n", __func__, type);
+   // LOGI("%s, [type=%d]\n", __func__, type);
     ret = ioctl(fd, FM_IOCTL_POWERDOWN, &type);
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+  //      LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
+ //   LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
 
@@ -111,15 +111,15 @@ int COM_get_ps(int fd, RDSData_Struct *rds, uint8_t **ps, int *ps_len)
     FMR_ASSERT(ps_len);
 
     if (rds->event_status&RDS_EVENT_PROGRAMNAME) {
-        LOGD("%s, Success,[event_status=%d]\n", __func__, rds->event_status);
+     //   LOGD("%s, Success,[event_status=%d]\n", __func__, rds->event_status);
         *ps = &rds->PS_Data.PS[3][0];
         *ps_len = sizeof(rds->PS_Data.PS[3]);
 
         COM_change_string(*ps, *ps_len);
         memcpy(tmp_ps, *ps, 8);
-        LOGI("PS=%s\n", tmp_ps);
+     //   LOGI("PS=%s\n", tmp_ps);
     } else {
-        LOGE("%s, Failed,[event_status=%d]\n", __func__, rds->event_status);
+    //    LOGE("%s, Failed,[event_status=%d]\n", __func__, rds->event_status);
         *ps = NULL;
         *ps_len = 0;
         ret = -ERR_RDS_NO_DATA;
@@ -138,15 +138,15 @@ int COM_get_rt(int fd, RDSData_Struct *rds, uint8_t **rt, int *rt_len)
     FMR_ASSERT(rt_len);
 
     if (rds->event_status&RDS_EVENT_LAST_RADIOTEXT) {
-        LOGD("%s, Success,[event_status=%d]\n", __func__, rds->event_status);
+      //  LOGD("%s, Success,[event_status=%d]\n", __func__, rds->event_status);
         *rt = &rds->RT_Data.TextData[3][0];
         *rt_len = rds->RT_Data.TextLength;
 
         COM_change_string(*rt, *rt_len);
         memcpy(tmp_rt, *rt, 64);
-        LOGI("RT=%s\n", tmp_rt);
+      //  LOGI("RT=%s\n", tmp_rt);
     } else {
-        LOGE("%s, Failed,[event_status=%d]\n", __func__, rds->event_status);
+    //    LOGE("%s, Failed,[event_status=%d]\n", __func__, rds->event_status);
         *rt = NULL;
         *rt_len = 0;
         ret = -ERR_RDS_NO_DATA;
@@ -162,10 +162,10 @@ int COM_get_pi(int fd, RDSData_Struct *rds, uint16_t *pi)
     FMR_ASSERT(pi);
 
     if (rds->event_status&RDS_EVENT_PI_CODE) {
-        LOGD("%s, Success,[event_status=%d] [PI=%d]\n", __func__, rds->event_status, rds->PI);
+     //   LOGD("%s, Success,[event_status=%d] [PI=%d]\n", __func__, rds->event_status, rds->PI);
         *pi = rds->PI;
     } else {
-        LOGI("%s, Failed, there's no pi,[event_status=%d]\n", __func__, rds->event_status);
+     //   LOGI("%s, Failed, there's no pi,[event_status=%d]\n", __func__, rds->event_status);
         *pi = -1;
         ret = -ERR_RDS_NO_DATA;
     }
@@ -188,9 +188,9 @@ int COM_tune(int fd, int freq, int band)
 
     ret = ioctl(fd, FM_IOCTL_TUNE, &parm);
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+  //      LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [freq=%d] [ret=%d]\n", __func__, fd, freq, ret);
+  //  LOGD("%s, [fd=%d] [freq=%d] [ret=%d]\n", __func__, fd, freq, ret);
     return ret;
 }
 
@@ -216,7 +216,7 @@ int COM_seek(int fd, int *freq, int band, int dir, int lev)
     if (ret == 0) {
         *freq = parm.freq;
     }
-    LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
+  //  LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
 
@@ -225,12 +225,12 @@ int COM_set_mute(int fd, int mute)
     int ret = 0;
     int tmp = mute;
 
-    LOGD("%s, start \n", __func__);
+  //  LOGD("%s, start \n", __func__);
     ret = ioctl(fd, FM_IOCTL_MUTE, &tmp);
     if (ret) {
         LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
+  //  LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
 
@@ -240,9 +240,9 @@ int COM_is_fm_pwrup(int fd, int *pwrup)
 
     ret = ioctl(fd, FM_IOCTL_IS_FM_POWERED_UP, pwrup);
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+     //   LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
+ //   LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
 
@@ -261,7 +261,7 @@ int COM_is_rdsrx_support(int fd, int *supt)
     int support = -1;
 
     if (fd < 0) {
-        LOGE("FM isRDSsupport fail, g_fm_fd = %d\n", fd);
+    //    LOGE("FM isRDSsupport fail, g_fm_fd = %d\n", fd);
         *supt = -1;
         ret = -ERR_INVALID_FD;
         return ret;
@@ -269,12 +269,12 @@ int COM_is_rdsrx_support(int fd, int *supt)
 
     ret = ioctl(fd, FM_IOCTL_RDS_SUPPORT, &support);
     if (ret) {
-        LOGE("FM FM_IOCTL_RDS_SUPPORT fail, errno = %d\n", errno);
+   //     LOGE("FM FM_IOCTL_RDS_SUPPORT fail, errno = %d\n", errno);
         //don't support
         *supt = 0;
         return ret;
     }
-    LOGI("isRDSsupport Success,[support=%d]\n", support);
+  //  LOGI("isRDSsupport Success,[support=%d]\n", support);
     *supt = support;
     return ret;
 }
@@ -283,7 +283,7 @@ int COM_pre_search(int fd)
 {
     fm_s32 ret = 0;
     ret = ioctl(fd, FM_IOCTL_PRE_SEARCH, 0);
-    LOGD("COM_pre_search:%d\n",ret);
+   // LOGD("COM_pre_search:%d\n",ret);
     return ret;
 }
 
@@ -291,7 +291,7 @@ int COM_restore_search(int fd)
 {
     fm_s32 ret = 0;
     ret = ioctl(fd, FM_IOCTL_RESTORE_SEARCH, 0);
-    LOGD("COM_restore_search:%d\n",ret);
+ //   LOGD("COM_restore_search:%d\n",ret);
     return ret;
 }
 
@@ -307,11 +307,11 @@ int COM_Soft_Mute_Tune(int fd, fm_softmute_tune_t *para)
     value.freq = para->freq;
     ret = ioctl(fd, FM_IOCTL_SOFT_MUTE_TUNE, &value);
     if (ret) {
-        LOGE("FM soft mute tune faild:%d\n",ret);
+    //    LOGE("FM soft mute tune faild:%d\n",ret);
         return ret;
     }
 #if 0
-    LOGD("Raw data of soft mute tune[%d]: RSSI:[%x]PAMD:[%x]MR:[%x]ATDC:[%x]PRX:[%x]SMG:[%x]",para->freq,value.RSSI,value.PAMD,value.MR,value.ATDC,value.PRX,value.SMG);
+   // LOGD("Raw data of soft mute tune[%d]: RSSI:[%x]PAMD:[%x]MR:[%x]ATDC:[%x]PRX:[%x]SMG:[%x]",para->freq,value.RSSI,value.PAMD,value.MR,value.ATDC,value.PRX,value.SMG);
     RSSI = ((value.RSSI & 0x03FF) >= 512) ? ((value.RSSI & 0x03FF) - 1024) : (value.RSSI & 0x03FF);
     PAMD = ((value.PAMD & 0xFF) >= 128) ? ((value.PAMD & 0x00FF) - 256) : (value.PAMD & 0x00FF);
     MR = ((value.MR & 0x01FF) >= 256) ? ((value.MR & 0x01FF) - 512) : (value.MR & 0x01FF);
@@ -350,7 +350,7 @@ int COM_get_cqi(int fd, int num, char *buf, int buf_len)
     cqi_req.ch_num = (uint16_t)num;
     cqi_req.buf_size = cqi_req.ch_num * sizeof(struct fm_cqi);
     if (!buf || (buf_len < cqi_req.buf_size)) {
-        LOGE("get cqi, invalid buf\n");
+       // LOGE("get cqi, invalid buf\n");
         return -1;
     }
     cqi_req.cqi_buf = buf;
@@ -358,7 +358,7 @@ int COM_get_cqi(int fd, int num, char *buf, int buf_len)
     //get cqi from driver
     ret = ioctl(fd, FM_IOCTL_CQI_GET, &cqi_req);
     if (ret < 0) {
-        LOGE("get cqi, failed %d\n", ret);
+      //  LOGE("get cqi, failed %d\n", ret);
         return -1;
     }
 
@@ -370,12 +370,12 @@ int COM_turn_on_off_rds(int fd, int onoff)
     int ret = 0;
     uint16_t rds_on = -1;
 
-    LOGD("Rdsset start\n");
+ //   LOGD("Rdsset start\n");
     if (onoff == FMR_RDS_ON) {
         rds_on = 1;
         ret = ioctl(fd, FM_IOCTL_RDS_ONOFF, &rds_on);
         if (ret) {
-            LOGE("FM_IOCTL_RDS_ON failed\n");
+        //    LOGE("FM_IOCTL_RDS_ON failed\n");
             return ret;
         }
         LOGD("Rdsset Success,[rds_on=%d]\n", rds_on);
@@ -383,10 +383,10 @@ int COM_turn_on_off_rds(int fd, int onoff)
         rds_on = 0;
         ret = ioctl(fd, FM_IOCTL_RDS_ONOFF, &rds_on);
         if (ret) {
-            LOGE("FM_IOCTL_RDS_OFF failed\n");
+       //     LOGE("FM_IOCTL_RDS_OFF failed\n");
             return ret;
         }
-        LOGD("Rdsset Success,[rds_on=%d]\n", rds_on);
+     //   LOGD("Rdsset Success,[rds_on=%d]\n", rds_on);
     }
     return ret;
 }
@@ -401,9 +401,9 @@ int COM_get_chip_id(int fd, int *chipid)
     ret = ioctl(fd, FM_IOCTL_GETCHIPID, &tmp);
     *chipid = (int)tmp;
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+     //   LOGE("%s, failed\n", __func__);
     }
-    LOGD("%s, [fd=%d] [chipid=%x] [ret=%d]\n", __func__, fd, *chipid, ret);
+    // LOGD("%s, [fd=%d] [chipid=%x] [ret=%d]\n", __func__, fd, *chipid, ret);
     return ret;
 }
 
@@ -455,7 +455,7 @@ int COM_active_af(int fd, RDSData_Struct *rds, int band, uint16_t cur_freq, uint
     parm.space = FM_SPACE_DEFAULT;
 
     if (!(rds->event_status&RDS_EVENT_AF)) {
-        LOGE("activeAF failed\n");
+       // LOGE("activeAF failed\n");
         *ret_freq = 0;
         ret = -ERR_RDS_NO_DATA;
         return ret;
@@ -464,7 +464,7 @@ int COM_active_af(int fd, RDSData_Struct *rds, int band, uint16_t cur_freq, uint
     AF_PAMD_LBound = PAMD_DB_TBL[0]; //5dB
     AF_PAMD_HBound = PAMD_DB_TBL[1]; //15dB
     ioctl(fd, FM_IOCTL_GETCURPAMD, &PAMD_Value);
-    LOGI("current_freq=%d,PAMD_Value=%d\n", cur_freq, PAMD_Value);
+   // LOGI("current_freq=%d,PAMD_Value=%d\n", cur_freq, PAMD_Value);
 
     if (PAMD_Value < AF_PAMD_LBound) {
         rds_on = 0;
@@ -478,14 +478,14 @@ int COM_active_af(int fd, RDSData_Struct *rds, int band, uint16_t cur_freq, uint
                 ioctl(fd, FM_IOCTL_TUNE, &parm);
                 usleep(250*1000);
                 ioctl(fd, FM_IOCTL_GETCURPAMD, &PAMD_Level[i]);
-                LOGI("next_freq=%d,PAMD_Level=%d\n", parm.freq, PAMD_Level[i]);
+         //       LOGI("next_freq=%d,PAMD_Level=%d\n", parm.freq, PAMD_Level[i]);
                 if (PAMD_Level[i] > PAMD_Value) {
                     PAMD_Value = PAMD_Level[i];
                     sw_freq = set_freq;
                 }
             }
         }
-        LOGI("PAMD_Value=%d, sw_freq=%d\n", PAMD_Value, sw_freq);
+    //    LOGI("PAMD_Value=%d, sw_freq=%d\n", PAMD_Value, sw_freq);
         if ((PAMD_Value > AF_PAMD_HBound)&&(sw_freq != 0)) {
             parm.freq = sw_freq;
             ioctl(fd, FM_IOCTL_TUNE, &parm);
@@ -498,7 +498,7 @@ int COM_active_af(int fd, RDSData_Struct *rds, int band, uint16_t cur_freq, uint
         rds_on = 1;
         ioctl(fd, FM_IOCTL_RDS_ONOFF, &rds_on);
     } else {
-        LOGD("RDS_EVENT_AF old freq:%d\n", org_freq);
+     //   LOGD("RDS_EVENT_AF old freq:%d\n", org_freq);
     }
     *ret_freq = cur_freq;
 
@@ -511,10 +511,10 @@ int COM_ana_switch(int fd, int antenna)
 
     ret = ioctl(fd, FM_IOCTL_ANA_SWITCH, &antenna);
     if (ret < 0) {
-        LOGE("%s: fail, ret = %d\n", __func__, ret);
+      //  LOGE("%s: fail, ret = %d\n", __func__, ret);
     }
 
-    LOGD("%s: [ret = %d]\n", __func__, ret);
+   // LOGD("%s: [ret = %d]\n", __func__, ret);
     return ret;
 }
 
@@ -530,10 +530,10 @@ int COM_is_dese_chan(int fd, int freq)
 
     ret = ioctl(fd, FM_IOCTL_IS_DESE_CHAN, &freq);
     if (ret < 0) {
-        LOGE("%s, failed,ret=%d\n", __func__,ret);
+     //   LOGE("%s, failed,ret=%d\n", __func__,ret);
         return ret;
     } else {
-        LOGD("[fd=%d] %d --> dese=%d\n", fd, tmp, freq);
+      //  LOGD("[fd=%d] %d --> dese=%d\n", fd, tmp, freq);
         return freq;
     }
 }
@@ -553,10 +553,10 @@ int COM_desense_check(int fd, int freq, int rssi)
     parm.rssi = rssi;
     ret = ioctl(fd, FM_IOCTL_DESENSE_CHECK, &parm);
     if (ret < 0) {
-        LOGE("%s, failed,ret=%d\n", __func__,ret);
+     //   LOGE("%s, failed,ret=%d\n", __func__,ret);
         return ret;
     } else {
-        LOGD("[fd=%d] %d --> dese=%d\n", fd,freq,ret);
+       // LOGD("[fd=%d] %d --> dese=%d\n", fd,freq,ret);
         return ret;
     }
 }

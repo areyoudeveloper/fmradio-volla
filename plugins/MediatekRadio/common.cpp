@@ -20,7 +20,7 @@
 #undef LOG_TAG
 #endif
 #define LOG_TAG "FMLIB_COM"
-
+LOGE = printf;
 static int g_stopscan = 0;
 
 int COM_open_dev(const char *pname, int *fd)

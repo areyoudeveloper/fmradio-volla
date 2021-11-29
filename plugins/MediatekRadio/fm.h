@@ -29,7 +29,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <dlfcn.h>
-
+#define LOGE printf
 typedef signed char fm_s8;
 typedef signed short fm_s16;
 typedef signed int fm_s32;

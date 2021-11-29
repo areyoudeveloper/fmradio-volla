@@ -24,13 +24,12 @@ class MediatekRadio : public QObject {
 
 private:
 	bool radioRunning = false;
-	bool isHeadset = false;
+	bool isHeadset = true;
 	int frequency = 10250;
 	int idx = -1;
 	void preparePulseAudio();
 	void mute();
 	void unmute();
-	bool isHeadsetAvailable();
 	int getRssi();
 	void startVolumeUpdater();
 	void stopVolumeUpdater();

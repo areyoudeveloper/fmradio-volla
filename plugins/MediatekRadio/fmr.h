@@ -16,7 +16,7 @@
 
 #ifndef __FMR_H__
 #define __FMR_H__
-#include <jni.h>
+// uneeded #include <jni.h>
 #include <utils/Log.h>
 #include <stdio.h>
 #include <stdlib.h>

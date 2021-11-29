@@ -16,9 +16,19 @@
 
 #ifndef __FM_H__
 #define __FM_H__
-
-#include <linux/ioctl.h>
-#include <linux/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <stdint.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
+#include <pthread.h>
+#include <signal.h>
+#include <errno.h>
+#include <dlfcn.h>
 
 typedef signed char fm_s8;
 typedef signed short fm_s16;

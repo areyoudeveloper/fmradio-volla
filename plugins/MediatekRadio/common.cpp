@@ -87,7 +87,35 @@ int COM_pwr_down(int fd, int type)
  //   LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
+int COM_get_chip_id(int fd, int *chipid)
+{
+    int ret = 0;
+    uint16_t tmp = 0;
 
+    FMR_ASSERT(chipid);
+
+    ret = ioctl(fd, FM_IOCTL_GETCHIPID, &tmp);
+    *chipid = (int)tmp;
+    if (ret){
+        printf("%s, failed\n", __func__);
+    }
+    printf("%s, [fd=%d] [chipid=%x] [ret=%d]\n", __func__, fd, *chipid, ret);
+    return ret;
+}
+
+int COM_get_rssi(int fd, int *rssi)
+{
+    int ret = 0;
+
+    FMR_ASSERT(rssi);
+
+    ret = ioctl(fd, FM_IOCTL_GETRSSI, rssi);
+    if(ret){
+        printf("%s, failed, [ret=%d]\n", __func__, ret);
+    }
+    printf("%s, [rssi=%d] [ret=%d]\n", __func__, *rssi, ret);
+    return ret;
+}
 /*0x20: space, 0x7E:~*/
 #define ISVALID(c)((c)>=0x20 && (c)<=0x7E)
 /*change any char which out of [0x20,0x7E]to space(0x20)*/

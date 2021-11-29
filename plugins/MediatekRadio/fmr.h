@@ -35,7 +35,7 @@
 #include "fm.h"
 /*
 #undef FM_LIB_USE_XLOG
-
+#define LOGE printf
 #ifdef FM_LIB_USE_XLOG
 #include <cutils/xlog.h>
 #undef LOGV

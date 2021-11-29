@@ -87,21 +87,7 @@ int COM_pwr_down(int fd, int type)
  //   LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
 }
-int COM_get_chip_id(int fd, int *chipid)
-{
-    int ret = 0;
-    uint16_t tmp = 0;
 
-    FMR_ASSERT(chipid);
-
-    ret = ioctl(fd, FM_IOCTL_GETCHIPID, &tmp);
-    *chipid = (int)tmp;
-    if (ret){
-        printf("%s, failed\n", __func__);
-    }
-    printf("%s, [fd=%d] [chipid=%x] [ret=%d]\n", __func__, fd, *chipid, ret);
-    return ret;
-}
 
 int COM_get_rssi(int fd, int *rssi)
 {
@@ -406,7 +392,7 @@ int COM_turn_on_off_rds(int fd, int onoff)
         //    LOGE("FM_IOCTL_RDS_ON failed\n");
             return ret;
         }
-        LOGD("Rdsset Success,[rds_on=%d]\n", rds_on);
+      //  LOGD("Rdsset Success,[rds_on=%d]\n", rds_on);
     } else {
         rds_on = 0;
         ret = ioctl(fd, FM_IOCTL_RDS_ONOFF, &rds_on);

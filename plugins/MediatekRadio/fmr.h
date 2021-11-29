@@ -31,7 +31,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <dlfcn.h>
-#define LOGE printf
+
 #include "fm.h"
 /*
 #undef FM_LIB_USE_XLOG

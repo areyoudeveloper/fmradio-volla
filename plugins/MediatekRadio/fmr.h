@@ -31,11 +31,11 @@
 #include <signal.h>
 #include <errno.h>
 #include <dlfcn.h>
-
+#define LOGE printf
 #include "fm.h"
 /*
 #undef FM_LIB_USE_XLOG
-#define LOGE printf
+
 #ifdef FM_LIB_USE_XLOG
 #include <cutils/xlog.h>
 #undef LOGV

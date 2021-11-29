@@ -228,7 +228,7 @@ int COM_set_mute(int fd, int mute)
   //  LOGD("%s, start \n", __func__);
     ret = ioctl(fd, FM_IOCTL_MUTE, &tmp);
     if (ret) {
-        LOGE("%s, failed\n", __func__);
+     //   LOGE("%s, failed\n", __func__);
     }
   //  LOGD("%s, [fd=%d] [ret=%d]\n", __func__, fd, ret);
     return ret;
@@ -421,7 +421,7 @@ int COM_read_rds_data(int fd, RDSData_Struct *rds, uint16_t *rds_status)
         event_status = rds->event_status;
         //memcpy(tmp_ps, &rds->PS_Data.PS[3][0], 8);
         //memcpy(tmp_rt, &rds->RT_Data.TextData[3][0], 64);
-        LOGI("event_status = 0x%x\n", event_status);
+       // LOGI("event_status = 0x%x\n", event_status);
         //memset(tmp_ps, 0, 9);
         //memset(tmp_rt, 0, 65);
         *rds_status = event_status;

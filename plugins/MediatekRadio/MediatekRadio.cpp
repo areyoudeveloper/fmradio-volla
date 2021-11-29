@@ -37,54 +37,17 @@
 MediatekRadio::MediatekRadio() {
 
 }
-// check if headset/headphones are connected, they are act as antenna
-bool MediatekRadio::isHeadsetAvailable() {
-
-	FILE *fp;
-	char path[45];
-
-	fp = popen("/usr/bin/pactl list sinks | /bin/grep \"Active Port:\"", "r");
-
-	if(fp == NULL) {
-		printf("error checking for headset");
-		return false;
-	}
-
-
-
-	while (fgets(path, sizeof(path), fp) != NULL) {
-		printf("%s", path);
-	}
-
-	printf("\n");
-
-	pclose(fp);
-
-	if(strcmp(path, "	Active Port: output-wired_headset") < 0) {
-		printf("not using headset\n");
-
-		if(!strcmp(path, "	Active Port: output-wired_headphone") < 0) {
-			return true;
-		}
-
-		return false;
-
-	}
-
-	isHeadset = true;
-	return true;
-
 }
 
 // This is needed to route the FM input to the headphones
-void MediatekRadio::preparePulseAudio() {
+/* void MediatekRadio::preparePulseAudio() {
 
 	int ret;
 
 	ret = system("pacmd set-source-port 1 input-fm_tuner");
 	ret = system("pactl load-module module-loopback source=1 sink=0");
 
-}
+}*/
 
 bool MediatekRadio::isRadioRunning() {
 
@@ -110,19 +73,20 @@ void MediatekRadio::stopVolumeUpdater() {
 // Start the radio
 QByteArray MediatekRadio::startRadio(int freq) {
 
-	if(isHeadsetAvailable()) {
+	
 
 		int ret = 0;
 
 		if((ret = COM_open_dev(FM_DEV_NAME, &idx)) < 0) {
 			printf("error opening device: %d\n", ret);
 			return "Error";
-		}
+		
 
 		if((ret = COM_pwr_up(idx, FM_BAND_UE, freq)) < 0) {
 			printf("error powering up: %d\n", ret);
 			return "Error";
 		}
+}
 
 		preparePulseAudio();
 
@@ -130,9 +94,7 @@ QByteArray MediatekRadio::startRadio(int freq) {
 		startVolumeUpdater();
 
 		return "Stop radio";
-	} else {
-		return "Headset not available";
-	}
+	
 
 }
 
@@ -153,11 +115,11 @@ QByteArray MediatekRadio::stopRadio() {
 
 	ret = system("pactl unload-module module-loopback");
 
-	if(isHeadset) {
+	/*if(isHeadset) {
 		ret = system("pacmd set-source-port 1 input-wired_headset && pacmd set-sink-port 0 output-wired_headset");
 	} else {
 		ret = system("pacmd set-source-port 1 input-builtin_mic && pacmd set-sink-port 0 output-wired_headphone");
-	}
+	}*/
 
 	stopVolumeUpdater();
 

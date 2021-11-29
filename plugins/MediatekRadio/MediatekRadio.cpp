@@ -36,7 +36,7 @@
 
 MediatekRadio::MediatekRadio() {
 
-}
+
 }
 
 // This is needed to route the FM input to the headphones

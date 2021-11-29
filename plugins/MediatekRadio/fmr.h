@@ -33,7 +33,7 @@
 #include <dlfcn.h>
 
 #include "fm.h"
-
+/*
 #undef FM_LIB_USE_XLOG
 
 #ifdef FM_LIB_USE_XLOG
@@ -60,7 +60,7 @@
 #undef LOGE
 #define LOGE(...) ALOGE(__VA_ARGS__)
 #endif
-
+*/
 #define CUST_LIB_NAME "libfmcust.so"
 #define FM_DEV_NAME "/dev/fm"
 

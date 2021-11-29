@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Modifications copyright (C) 2020 venji10 <bennisteinir@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +17,8 @@
 #ifndef __FM_H__
 #define __FM_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <stdint.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <termios.h>
-#include <pthread.h>
-#include <signal.h>
-#include <errno.h>
-#include <dlfcn.h>
+#include <linux/ioctl.h>
+#include <linux/time.h>
 
 typedef signed char fm_s8;
 typedef signed short fm_s16;
@@ -59,54 +47,6 @@ enum {
     FM_SCAN_SEL_SW, // select software scan, advantage: more accurate
     FM_SCAN_SEL_MAX
 };
-
-//
-enum fm_err_em {
-    ERR_SUCCESS = 1000, // kernel error begin at here
-    ERR_INVALID_BUF,
-    ERR_INVALID_PARA,
-    ERR_STP,
-    ERR_GET_MUTEX,
-    ERR_FW_NORES,
-    ERR_RDS_CRC,
-    ERR_INVALID_FD, //  native error begin at here
-    ERR_UNSUPPORT_CHIP,
-    ERR_LD_LIB,
-    ERR_FIND_CUST_FNUC,
-    ERR_UNINIT,
-    ERR_NO_MORE_IDX,
-    ERR_RDS_NO_DATA,
-    ERR_UNSUPT_SHORTANA,
-    ERR_MAX
-};
-
-
-struct CUST_cfg_ds
-{
-    int16_t chip;
-    int32_t band;
-    int32_t low_band;
-    int32_t high_band;
-    int32_t seek_space;
-    int32_t max_scan_num;
-    int32_t seek_lev;
-    int32_t scan_sort;
-    int32_t short_ana_sup;
-    int32_t rssi_th_l2;
-    struct fm_fake_channel_t *fake_chan;
-};
-
-enum fmr_rds_onoff {
-    FMR_RDS_ON,
-    FMR_RDS_OFF,
-    FMR_MAX
-};
-
-#define CQI_CH_NUM_MAX 255
-#define CQI_CH_NUM_MIN 0
-
-
-
 
 //*****************************************************************************************
 //***********************************FM config for customer *******************************
@@ -190,7 +130,6 @@ struct fm_tune_parm {
     uint8_t band;
     uint8_t space;
     uint8_t hilo;
-    uint8_t deemphasis;
     uint16_t freq;
 };
 
@@ -343,13 +282,13 @@ typedef struct {
 struct rds_raw_data {
     int dirty; // indicate if the data changed or not
     int len; // the data len form chip
-    uint8_t data[148];
+    uint8_t data[146];
 };
 
 struct rds_group_cnt {
-    unsigned int total;
-    unsigned int groupA[16]; // RDS groupA counter
-    unsigned int groupB[16]; // RDS groupB counter
+    unsigned long total;
+    unsigned long groupA[16]; // RDS groupA counter
+    unsigned long groupB[16]; // RDS groupB counter
 };
 
 enum rds_group_cnt_opcode {
@@ -409,7 +348,6 @@ typedef enum {
     RDS_EVENT_AFON_LIST      = 0x0200, // An alternative frequency list is ready
     RDS_EVENT_TAON           = 0x0400,  // Other Network traffic announcement start
     RDS_EVENT_TAON_OFF       = 0x0800, // Other Network traffic announcement finished.
-    RDS_EVENT_ECC_CODE       = 0x1000, /* ECC code */
     RDS_EVENT_RDS            = 0x2000, // RDS Interrupt had arrived durint timer period
     RDS_EVENT_NO_RDS         = 0x4000, // RDS Interrupt not arrived durint timer period
     RDS_EVENT_RDS_TIMER      = 0x8000 // Timer for RDS Bler Check. ---- BLER  block error rate
@@ -497,6 +435,7 @@ typedef struct {
 
 // ********** ***********FM IOCTL define start *******************************
 #define FM_IOC_MAGIC        0xf5
+
 #define FM_IOCTL_POWERUP       _IOWR(FM_IOC_MAGIC, 0, struct fm_tune_parm*)
 #define FM_IOCTL_POWERDOWN     _IOWR(FM_IOC_MAGIC, 1, int32_t*)
 #define FM_IOCTL_TUNE          _IOWR(FM_IOC_MAGIC, 2, struct fm_tune_parm*)
@@ -566,6 +505,7 @@ typedef struct {
 #define FM_IOCTL_FULL_CQI_LOG _IOWR(FM_IOC_MAGIC, 70, fm_full_cqi_log_t *)
 
 #define FM_IOCTL_DUMP_REG   _IO(FM_IOC_MAGIC, 0xFF)
+
 // ********** ***********FM IOCTL define end *******************************
 
 enum group_idx {
